@@ -1,5 +1,5 @@
 # Crypter
-This is a Python scrypt to encrypt and decrypt keys. Feel free to use it in your scripts and automation.
+This script encrypt and decrypt keys. Feel free to use it in your scripts and automation.
 The idea is to encrypt keys and keep ids of encrypted object, encrypted objects JSON and password separately. For example, you can operate with ids in any sheet or text file. However, encrypted JSON object should be on a USB flash drive and password should be ideally memorised. Once you need to decrypt some keys you can insert USB flash drive into your machine and decrypt keys on the go with like `decrypt()` function providing it your password.
 
 # Usage
