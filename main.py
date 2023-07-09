@@ -1,51 +1,49 @@
-from loguru import logger
 from eth_account import Account
 import json
 
 
-password = 'Your password'
-
-
-def encrypt():
+def encrypt(password):
+    print('Start encrypting keys...')
     encrypted_keys = []
 
-    with open('keys.txt', 'r') as f:
-        keys = [row.strip() for row in f]
+    with open('keys.txt', 'r') as file:
+        keys = [row.strip() for row in file]
 
     for key in keys:
         encrypted = Account.encrypt(key, password, kdf=None, iterations=None)
         encrypted_keys.append(encrypted)
-        id = encrypted['id']
-        logger.success(f'Encrypted: {key} -> {id}')
 
-    with open('ids.txt', 'w') as f:
+    with open('ids.txt', 'w') as file:
         for encrypted_key in encrypted_keys:
-            id = encrypted_key['id']
-            f.write(id + '\n')
+            identifier = encrypted_key['id']
+            file.write(identifier + '\n')
 
-    with open("result.json", "w") as outfile:
-        data = {}
-        data['wallets'] = encrypted_keys
+    with open("vault.json", "w") as file:
+        data = {'vault': encrypted_keys}
         json_data = json.dumps(data)
-        outfile.write(json_data)
+        file.write(json_data)
 
-    logger.success(f'All keys have been encrypted and stored in result.json, ids are in ids.txt')
+    print('All keys have been encrypted and stored in result.json, identifiers are in ids.txt')
 
 
-def decrypt():
-    with open('ids.txt', 'r') as file:
-        ids = [row.strip() for row in file]
+def decrypt(password):
+    with open('keys.txt', 'r') as file:
+        identifiers = [row.strip() for row in file]
 
-    with open('result.json', 'r') as file:
+    with open('vault.json', 'r') as file:
         json_object = json.load(file)
 
-    for id in ids:
-        wallets = json_object['wallets']
+    keys = []
+    for identifier in identifiers:
+        wallets = json_object['vault']
         for wallet in wallets:
-            if wallet['id'] == id:
-                decrypted = Account.decrypt(wallet, password).hex()
-                logger.success(f'Decrypted: {id} -> {decrypted}')
+            if wallet['id'] == identifier:
+                key = Account.decrypt(wallet, password).hex()
+                keys.append(key)
+
+    return keys
 
 
 if __name__ == '__main__':
-    encrypt()
+    password_input = int(input('Password: '))
+    encrypt(password_input)
